@@ -1,0 +1,2 @@
+# dibi
+utils for postgresql
