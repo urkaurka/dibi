@@ -48,3 +48,13 @@ class Table:
 
     def create_indexes(self):
         pass
+
+    def max_id(self, label='id'):
+        cmd = f"""
+          select max({label})
+          from {self.table_name}"""
+        self.cursor.execute(cmd)
+        ret = self.cursor.fetchone()[0]
+        if not ret:
+            return 0
+        return ret
