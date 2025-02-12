@@ -3,14 +3,13 @@ import logging
 from pathlib import Path
 import csv
 
-import psycopg2  # type: ignore
-from jinja2 import Template
-
 logger = logging.getLogger(__name__)
 csv.register_dialect('pipes', delimiter='|')
 
 
 def get_connection(db: dict = None):
+    import psycopg2  # type: ignore
+
     return psycopg2.connect(
         host=db['HOST'],
         port=db['PORT'],
@@ -36,7 +35,7 @@ class QueryWrapper:
         return self.cursor.fetchall()
 
 
-def drop_any_tables_except(conn, schema_in: str, tables_to_save: list[str] = []) -> None:
+def drop_any_tables_except(conn, schema_in: str = "public", tables_to_save: list[str] = []) -> None:
     with conn.cursor() as cursor:
         qw = QueryWrapper(cursor)
         sel_query = """
@@ -71,6 +70,8 @@ def empty_any_tables_except(conn, schema_in: str, tables_to_save: list[str] = []
 
 
 def execute_template_script(conn, path: Path, context: dict, fetch=False):
+    from jinja2 import Template
+
     with conn.cursor() as cursor:
         logger.info(f'start script {path.name}')
         template = Template(path.open().read())
@@ -81,18 +82,21 @@ def execute_template_script(conn, path: Path, context: dict, fetch=False):
             return cursor.fetchall()
 
 
-def execute_script(conn, path: Path, schema='en', fetch=False):
-    logger.info(f'start script {path.name}')
+def execute_script(conn, script: str, schema=None, fetch=False):
+    logger.info('start script')
     with conn.cursor() as cursor:
-        real_script = path.open().read()
         if schema:
-            logger.info(f'start script {path.name}')
-            real_script = f"set search_path to {schema};\n" + real_script
-        cursor.execute(real_script)
+            script = f"set search_path to {schema};\n" + script
+        cursor.execute(script)
         conn.commit()
-        logger.info(f'end script {path.name}')
+        logger.info('end script')
         if fetch:
             return cursor.fetchall()
+
+
+def execute_script_file(conn, path: Path, schema=None, fetch=False):
+    real_script = path.open().read()
+    return execute_script(conn, real_script, schema=schema, fetch=fetch)
 
 
 def create_schema(conn, schema: str) -> None:

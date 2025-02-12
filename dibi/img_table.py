@@ -32,7 +32,11 @@ class Table:
         return self
 
     def exists(self) -> bool:
-        schema, table = self.table_name.split('.')
+        if self.table_name.find(".") != -1:
+            schema, table = self.table_name.split('.')
+        else:
+            schema = 'public'
+            table = self.table_name
         cmd = f"""
           select count(*)
           from pg_tables
