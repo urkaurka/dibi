@@ -1,14 +1,17 @@
+import psycopg2  # type: ignore
+
+
 class Table:
     def __init__(self,
-                 conn,
+                 conn: psycopg2.extensions.connection,
                  table_name: str,
                  create_query: str,
                  insert_query: str):
-        self.conn = conn
-        self.cursor = conn.cursor()
-        self.table_name = table_name
-        self.create_query = create_query
-        self.insert_query = insert_query
+        self.conn: psycopg2.extensions.connection = conn
+        self.cursor: psycopg2.extensions.cursor = conn.cursor()
+        self.table_name: str = table_name
+        self.create_query: str = create_query
+        self.insert_query: str = insert_query
 
     def create(self):
         self.cursor.execute(self.create_query)

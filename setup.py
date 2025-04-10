@@ -5,5 +5,6 @@ setuptools.setup(
     version="0.0.1",
     author="Stefano Ligabue",
     description="utility da database postgres",
-    packages=["dibi"],
+    packages=setuptools.find_packages(),
+    package_data={'dibi': ['py.typed']}
 )
