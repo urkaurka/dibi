@@ -1,2 +1,7 @@
 *~
+*.pyi
 */__pycache__/
+build/
+dibi.egg-info/
+dibi/py.typed
+dist/
