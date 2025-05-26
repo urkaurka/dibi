@@ -2,7 +2,9 @@ from datetime import datetime
 
 
 def type_from_val(val):
-    if isinstance(val, int):
+    if isinstance(val, bool):
+        return 'BOOLEAN'
+    elif isinstance(val, int):
         return 'integer'
     elif isinstance(val, float):
         return 'float'
