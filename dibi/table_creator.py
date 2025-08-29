@@ -1,7 +1,7 @@
 from datetime import datetime
 
 
-def type_from_val(val):
+def type_from_val(val) -> str:
     if isinstance(val, bool):
         return 'BOOLEAN'
     elif isinstance(val, int):
@@ -13,7 +13,7 @@ def type_from_val(val):
     return 'varchar'
 
 
-def create_query_from_plain_dict(table_name: str, data: dict):
+def create_query_from_plain_dict(table_name: str, data: dict) -> str:
     body_lines = [
         f"{key} {type_from_val(val)},"
         for key, val in data.items()
@@ -27,7 +27,7 @@ def create_query_from_plain_dict(table_name: str, data: dict):
       )"""
 
 
-def insert_query_from_plain_dict(table_name: str, data: dict):
+def insert_query_from_plain_dict(table_name: str, data: dict) -> str:
     field_list = list(data.keys())
     return f"""
       insert into {table_name} ({', '.join(field_list)})

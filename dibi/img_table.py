@@ -46,9 +46,12 @@ class Table:
           where schemaname = '{schema}'
             and tablename  = '{table}'"""
         self.cursor.execute(cmd)
-        return 0 < self.cursor.fetchone()[0]
+        results = self.cursor.fetchone()
+        if not results:
+            return False
+        return 0 < results[0]
 
-    def how_many_rows(self):
+    def how_many_rows(self) -> int:
         self.cursor.execute(f"""
           select count(*) from {self.table_name}""")
         return self.cursor.fetchone()[0]

@@ -3,7 +3,7 @@ from dibi.img_table import Table
 
 class Schema:
     def __init__(self, conn, name: str):
-        self.tables = {
+        self.tables : dict[str, dict[str, Table | list]] = {
             # 'tokens': {'table': TokensImgTable, 'buffer': []
         }
         self.name = name
@@ -51,12 +51,14 @@ def make_from_db(conn, schema_name: str) -> Schema:
                           where schemaname not in (
                             'information_schema', 'pg_catalog')
                           order by schemaname, tablename""")
+        results = cursor.fetchall()
         sche = Schema(conn, schema_name)
-        sche.tables = {
-            table_name: {
-                'table': Table(conn=conn,
-                               table_name=f"{schema_name}.{table_name}",
-                               create_query="",
-                               insert_query="")}
-            for schema_name, table_name in cursor.fetchall()}
+        if results:
+            sche.tables = {
+                table_name: {
+                    'table': Table(conn=conn,
+                                   table_name=f"{schema_name}.{table_name}",
+                                   create_query="",
+                                   insert_query="")}
+                for schema_name, table_name in results}
     return sche

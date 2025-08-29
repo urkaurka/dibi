@@ -3,13 +3,13 @@ import logging
 from pathlib import Path
 import csv
 
+import psycopg2
+
 logger = logging.getLogger(__name__)
 csv.register_dialect('pipes', delimiter='|')
 
 
-def get_connection(db: dict = None):
-    import psycopg2  # type: ignore
-
+def get_connection(db: dict) -> psycopg2.extensions.connection:
     return psycopg2.connect(
         host=db['HOST'],
         port=db['PORT'],
@@ -23,7 +23,7 @@ class QueryWrapper:
     def __init__(self, cursor):
         self.cursor = cursor
 
-    def scalar_query(self, query: str) -> Union[int, str]:
+    def scalar_query(self, query: str) -> int | str | None:
         self.cursor.execute(query)
         res = self.cursor.fetchone()
         if not res:
